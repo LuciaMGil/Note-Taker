@@ -4,6 +4,8 @@ const path = require('path');
 const app = express();
 const textData = require('./db/db.json');
 const uniqid = require("uniqid");
+
+
 var PORT = process.env.PORT || 5502;
 
 
@@ -31,8 +33,8 @@ app.get('/api/notes', (req, res) =>{
 app.post('/api/notes', (req, res) =>{
    // Gives new note an id
    req.body.id = uniqid();
-   var newNote = req.body;
-   
+   let newNote = req.body;
+
    // Adding new note to text data
    textData.push(newNote);
 
@@ -46,10 +48,6 @@ app.post('/api/notes', (req, res) =>{
    res.status(200).json({added: true});
  
 });
-
-
-
- 
 
  
 
