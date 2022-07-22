@@ -1,18 +1,3 @@
-
-
-// The application should have a db.json file on the back end that will be used to store and retrieve notes using the fs module.
-
-// The following HTML routes should be created:
-
-// GET /notes should return the notes.html file.
-
-// GET * should return the index.html file.
-
-// The following API routes should be created:
-
-// GET /api/notes should read the db.json file and return all saved notes as JSON.
-
-// POST /api/notes should receive a new note to save on the request body, add it to the db.json file, and then return the new note to the client. You'll need to find a way to give each note a unique id when it's saved (look into npm packages that could do this for you).
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -26,6 +11,17 @@ app.use(express.urlencoded({extended : true}));
 app.use(express.json());
 app.use(express.static("public"));
 
+// Route to home page
+app.get("/", function(req, res) {
+   res.sendFile(path.join(__dirname, './public/index.html'))
+   
+});
+
+// Route to notes page
+app.get("/notes", function(req, res) {
+    res.sendFile(path.join(__dirname, './public/notes.html'))
+ });
+
 
 // Route to read json file
 app.get('/api/notes', (req, res) =>{
@@ -33,33 +29,26 @@ app.get('/api/notes', (req, res) =>{
 });
 
 app.post('/api/notes', (req, res) =>{
+   // Gives new note an id
    req.body.id = uniqid();
-   textData.push(req.body);
-   console.log(req.body)
+   var newNote = req.body;
+   
+   // Adding new note to text data
+   textData.push(newNote);
+
+   // Stored notes
+   const savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+   
+   // Add new note to array
+   savedNotes.push(newNote);
+
+   fs.writeFileSync("./db/db.json", JSON.stringify(savedNotes));
+   res.status(200).json({added: true});
+ 
 });
 
 
-// app.post('api/notes', ({body}, res) => {
-//    body.id = uniqid();
-//    textData.push(body);
-//    writeFile(textData, JSON.stringify(textData), err => {
-//       if (err) throw err;
-//       res.json(textData);
-//    })
-// })
 
-
-console.log(textData);
-// Route to home page
-app.get("/", function(req, res) {
-   res.sendFile(path.join(__dirname, './public/index.html'))
-   // console.log(res);
-});
-
-// Route to notes page
-app.get("/notes", function(req, res) {
-    res.sendFile(path.join(__dirname, './public/notes.html'))
- });
  
 
  
