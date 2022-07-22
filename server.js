@@ -18,8 +18,7 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 const textData = require('./db/db.json');
-// const uniqid = require("uniqid");
-// const notes = require('./Develop/db/db.json');
+const uniqid = require("uniqid");
 var PORT = process.env.PORT || 5502;
 
 
@@ -27,13 +26,42 @@ app.use(express.urlencoded({extended : true}));
 app.use(express.json());
 app.use(express.static("public"));
 
-app.get("/", function(req, res) {
-   res.sendFile(path.join(__dirname, './public/index.html'))
+
+// Route to read json file
+app.get('/api/notes', (req, res) =>{
+   res.json(textData)
 });
 
+app.post('/api/notes', (req, res) =>{
+   req.body.id = uniqid();
+   textData.push(req.body);
+   console.log(req.body)
+});
+
+
+// app.post('api/notes', ({body}, res) => {
+//    body.id = uniqid();
+//    textData.push(body);
+//    writeFile(textData, JSON.stringify(textData), err => {
+//       if (err) throw err;
+//       res.json(textData);
+//    })
+// })
+
+
+console.log(textData);
+// Route to home page
+app.get("/", function(req, res) {
+   res.sendFile(path.join(__dirname, './public/index.html'))
+   // console.log(res);
+});
+
+// Route to notes page
 app.get("/notes", function(req, res) {
     res.sendFile(path.join(__dirname, './public/notes.html'))
  });
+ 
+
  
 
 app.listen(PORT, () => {
